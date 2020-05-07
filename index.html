@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST-Client</title>
+</head>
+
+<body>
+    <h1>REST-Client</h1>
+    <button id="buttonGet">GET</button>
+    <button id="buttonUpdate">UPDATE</button>
+    <p id="ausgabe">Ausgabe</p>
+
+    <script>
+        class RestClient {
+            async  getData() {
+                const response = await fetch('https://api.predic8.de/shop/products/57');
+                const myJSON = await response.json();
+                const name = myJSON.name;
+                return name;
+            }
+
+            updateData() {
+                fetch('https://api.predic8.de/shop/products/57', {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: 'Kraniched' })
+                });
+            }
+        }
+
+        const restClient = new RestClient();
+
+        function display(text) {
+            ausgabe.innerText = text;
+        }
+
+        const buttonGet = document.getElementById('buttonGet');
+        const buttonUpdate = document.getElementById('buttonUpdate');
+        const ausgabe = document.getElementById('ausgabe');
+
+        buttonGet.addEventListener('click', async function () {
+            const name = await restClient.getData();
+            display(name);
+        });
+
+        buttonUpdate.addEventListener('click', function () {
+            restClient.updateData()
+        });
+    </script>
+</body>
+
+</html>
