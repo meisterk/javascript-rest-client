@@ -15,38 +15,58 @@
 
     <script>
         class RestClient {
+            constructor(url){
+                this.url = url;
+            }
+
             async  getData() {
-                const response = await fetch('https://api.predic8.de/shop/products/57');
-                const myJSON = await response.json();
-                const name = myJSON.name;
-                return name;
+                const response = await fetch(this.url);
+                const jsonObject = await response.json();                
+                return jsonObject;
             }
 
             updateData() {
-                fetch('https://api.predic8.de/shop/products/57', {
+                fetch(this.url, {
                     method: 'PATCH',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name: 'Kraniched' })
+                    body: JSON.stringify({ name: 'Cranberry' })
                 });
             }
-        }
-
-        const restClient = new RestClient();
-
-        function display(text) {
-            ausgabe.innerText = text;
+        }        
+        
+        function display(arrayCustomers) {
+            let tableString = '<table><tr><th>Vorname</th><th>Nachname</th></tr>';
+            for(let i = 0; i<arrayCustomers.length; i++){
+                const firstname = arrayCustomers[i].firstname;
+                const lastname = arrayCustomers[i].lastname;
+                const row = `<tr><td>${firstname}</td><td>${lastname}</td></tr>`;
+                tableString += row;
+            }
+            tableString += '</table>';
+            ausgabe.innerHTML = tableString;
         }
 
         const buttonGet = document.getElementById('buttonGet');
         const buttonUpdate = document.getElementById('buttonUpdate');
         const ausgabe = document.getElementById('ausgabe');
 
+        window.addEventListener('load', async function(){
+            const restClientCustomers = new RestClient(
+                'https://api.predic8.de/shop/customers/?limit=50');
+            const jsonObjectCustomers = await restClientCustomers.getData();
+            const arrayCustomers = jsonObjectCustomers.customers;
+            display(arrayCustomers);
+        });
+
         buttonGet.addEventListener('click', async function () {
-            const name = await restClient.getData();
-            display(name);
+            const restClientCustomers = new RestClient(
+                'https://api.predic8.de/shop/customers/?limit=50');
+            const jsonObjectCustomers = await restClientCustomers.getData();
+            const arrayCustomers = jsonObjectCustomers.customers;
+            display(arrayCustomers);
         });
 
         buttonUpdate.addEventListener('click', function () {
